@@ -34,7 +34,7 @@ logger = logging.getLogger(__name__)
 @validator({
     'percpu': BoolField,
 })
-def get_cpu_time(percpu=False):
+def get_cpu_times(percpu=False):
 
     with koenig_client() as koec:
         if percpu:
@@ -81,5 +81,6 @@ def get_cpu_times_percent(interval=0, percpu=False):
             return {'cpu_times_percent': result}
 
         cpu_times_percent = koec.query_cpu_times_percent(interval)
-        result = serialize_cpu_times_percent(cpu_times_percent)
-        return {'cpu_times_percent': result}
+        return {
+            'cpu_times_percent': serialize_cpu_times_percent(cpu_times_percent)
+        }

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from agera.utils import (
+    bytes2human,
     utc2datetime,
 )
 
@@ -10,7 +11,13 @@ from marshmallow import (
 )
 
 
-class CpuTimesSchema(Schema):
+class BytesField(fields.Field):
+
+    def _serialize(self, value, attr, obj):
+        return bytes2human(value) if value else None
+
+
+class CPUTimesSchema(Schema):
 
     class Meta:
         fields = ('user', 'system', 'idle', 'nice', 'iowait', 'irq',
@@ -18,14 +25,14 @@ class CpuTimesSchema(Schema):
 
 
 def serialize_cpu_times(cpu_times):
-    return CpuTimesSchema().dump(cpu_times).data
+    return CPUTimesSchema().dump(cpu_times).data
 
 
 def serialize_cpu_times_percpu(cpu_times_percpu):
-    return CpuTimesSchema(many=True).dump(cpu_times_percpu).data
+    return CPUTimesSchema(many=True).dump(cpu_times_percpu).data
 
 
-class CpuTimesPercentSchema(Schema):
+class CPUTimesPercentSchema(Schema):
 
     class Meta:
         fields = ('user', 'system', 'idle', 'nice', 'iowait', 'irq',
@@ -33,14 +40,25 @@ class CpuTimesPercentSchema(Schema):
 
 
 def serialize_cpu_times_percent(cpu_times_percent):
-    return CpuTimesPercentSchema().dump(cpu_times_percent).data
+    return CPUTimesPercentSchema().dump(cpu_times_percent).data
 
 
 def serialize_cpu_times_percent_percpu(cpu_times_percent_percpu):
-    return CpuTimesPercentSchema(many=True).dump(cpu_times_percent_percpu).data
+    return CPUTimesPercentSchema(many=True).dump(cpu_times_percent_percpu).data
 
 
 class VirtualMemory(Schema):
+
+    total = BytesField(attribute='total')
+    available = BytesField(attribute='available')
+    used = BytesField(attribute='used')
+    free = BytesField(attribute='free')
+    active = BytesField(attribute='active')
+    inactive = BytesField(attribute='inactive')
+    buffers = BytesField(attribute='buffers')
+    cached = BytesField(attribute='cached')
+    wired = BytesField(attribute='wired')
+    shared = BytesField(attribute='shared')
 
     class Meta:
         fields = ('total', 'available', 'percent', 'used', 'free',
@@ -53,6 +71,12 @@ def serialize_virtual_memory(virtual_memory):
 
 
 class SwapMemory(Schema):
+
+    total = BytesField(attribute='total')
+    used = BytesField(attribute='used')
+    free = BytesField(attribute='free')
+    sin = BytesField(attribute='sin')
+    sout = BytesField(attribute='sout')
 
     class Meta:
         fields = ('total', 'used', 'free', 'percent', 'sin', 'sout')
@@ -68,11 +92,15 @@ class DiskPartitionSchema(Schema):
         fields = ('device', 'mountpoint', 'fstype', 'opts')
 
 
-def serialize_disk_partition(partition):
-    return DiskPartitionSchema().dump(partition).data
+def serialize_disk_partitions(partition):
+    return DiskPartitionSchema(many=True).dump(partition).data
 
 
 class DiskUsageSchema(Schema):
+
+    total = BytesField(attribute='total')
+    used = BytesField(attribute='used')
+    free = BytesField(attribute='free')
 
     class Meta:
         fields = ('total', 'used', 'free', 'percent')
