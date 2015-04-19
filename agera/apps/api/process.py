@@ -45,10 +45,10 @@ def get_process(pid):
 })
 def get_total_process(pids=None):
 
-    if not pids:
-        return {'total_process': []}
-
     with koenig_client() as koec:
+        if not pids:
+            pids = koec.query_pids()
+
         process_dict = koec.query_processes_by_pids(pids)
 
     result = []
