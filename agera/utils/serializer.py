@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from agera.utils import (
-    bytes2human,
     utc2datetime,
 )
 
@@ -9,12 +8,6 @@ from marshmallow import (
     Schema,
     fields,
 )
-
-
-class BytesField(fields.Field):
-
-    def _serialize(self, value, attr, obj):
-        return bytes2human(value) if value else None
 
 
 class CPUTimesSchema(Schema):
@@ -49,16 +42,10 @@ def serialize_cpu_times_percent_percpu(cpu_times_percent_percpu):
 
 class VirtualMemory(Schema):
 
-    total = BytesField(attribute='total')
-    available = BytesField(attribute='available')
-    used = BytesField(attribute='used')
-    free = BytesField(attribute='free')
-    active = BytesField(attribute='active')
-    inactive = BytesField(attribute='inactive')
-    buffers = BytesField(attribute='buffers')
-    cached = BytesField(attribute='cached')
-    wired = BytesField(attribute='wired')
-    shared = BytesField(attribute='shared')
+    percent = fields.Method('_percent')
+
+    def _percent(self, memory):
+        return '%.2f' % memory.percent
 
     class Meta:
         fields = ('total', 'available', 'percent', 'used', 'free',
@@ -72,11 +59,10 @@ def serialize_virtual_memory(virtual_memory):
 
 class SwapMemory(Schema):
 
-    total = BytesField(attribute='total')
-    used = BytesField(attribute='used')
-    free = BytesField(attribute='free')
-    sin = BytesField(attribute='sin')
-    sout = BytesField(attribute='sout')
+    percent = fields.Method('_percent')
+
+    def _percent(self, memory):
+        return '%.2f' % memory.percent
 
     class Meta:
         fields = ('total', 'used', 'free', 'percent', 'sin', 'sout')
@@ -98,9 +84,10 @@ def serialize_disk_partitions(partition):
 
 class DiskUsageSchema(Schema):
 
-    total = BytesField(attribute='total')
-    used = BytesField(attribute='used')
-    free = BytesField(attribute='free')
+    percent = fields.Method('_percent')
+
+    def _percent(self, disk_usage):
+        return '%.2f' % disk_usage.percent
 
     class Meta:
         fields = ('total', 'used', 'free', 'percent')
@@ -170,11 +157,20 @@ def serialize_users(users):
 class ProcessSchema(Schema):
 
     create_time = fields.Method('_create_time')
+    cpu_percent = fields.Method('_cpu_percent')
+    memory_percent = fields.Method('_memory_percent')
+
     uids = fields.Method('_get_uids')
     gids = fields.Method('_get_gids')
 
     def _create_time(self, process):
         return utc2datetime(process.create_time).strftime('%Y-%m-%d %H:%M:%S')
+
+    def _cpu_percent(self, process):
+        return '%.2f' % process.cpu_percent
+
+    def _memory_percent(self, process):
+        return '%.2f' % process.memory_percent
 
     def _get_uids(self, process):
         return fields.OrderedDict({
