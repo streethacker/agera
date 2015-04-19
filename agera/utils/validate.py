@@ -2,7 +2,6 @@
 
 import functools
 import inspect
-import json
 import re
 
 import logging
@@ -40,11 +39,6 @@ class ListField(Field):
     __description__ = u'列表类型'
 
     def __init__(self, field, seperate=',', **kwargs):
-        """
-        switch seperate:
-            None: 用于POST类型的方法，接受ArrayList类型的参数
-            not None: 用于GET类型的方法，指定分隔符(,)，接受String类型的参数
-        """
         self._field = field
         if isinstance(field, type) and issubclass(field, Field):
             self._field = field()
@@ -59,40 +53,6 @@ class ListField(Field):
         if not isinstance(val, list):
             raise ParameterFormatError(u'不是有效的列表类型')
         return [self._field.convert(x) for x in val]
-
-
-class JsonObjectBase(object):
-
-    def __init__(self):
-        pass
-
-    def __repr__(self):
-        return json.dumps(self.serialize())
-
-    def load(self, val):
-        self.val = json.loads(val)
-        return self.val
-
-    def save(self):
-        raise NotImplementedError
-
-    def dump(self):
-        raise NotImplementedError
-
-
-class JsonField(Field):
-    __description__ = u'JSON类型'
-
-    def __init__(self, model=JsonObjectBase):
-        self._model = model
-        if isinstance(model, type) and issubclass(model, JsonObjectBase):
-            self._model = model()
-
-    def convert(self, val):
-        try:
-            return self._model.load(val)
-        except ValueError:
-            raise ParameterFormatError(u'不是有效的JSON类型')
 
 
 class IntField(Field):
@@ -128,38 +88,6 @@ class BoolField(Field):
 class FloatField(Field):
     __type__ = float
     __description__ = u'小数'
-
-
-class ENumField(Field):
-    __description__ = u'枚举值'
-
-    def __init__(self, enum_set=[], **kwargs):
-        # FIXME complete later
-        super(ENumField, self).__init__(**kwargs)
-
-    def convert(self, val):
-        # FIXME complete later
-        return val
-
-
-class PasswordField(Field):
-    __description__ = u'密码'
-
-    def convert(self, val):
-        if len(val) < 6 or len(val) > 20:
-            raise ParameterFormatError(u'密码应由6-20位数字或字母组成')
-        return str(val)
-
-
-class TimestampField(Field):
-    __description__ = u'时间戳'
-
-    def convert(self, val):
-        try:
-            val = int(val)
-        except ValueError:
-            raise ParameterFormatError(u'{}不是有效的时间戳类型'.format(val))
-        return val
 
 
 class validator(object):

@@ -30,7 +30,7 @@ def init(app):
     app.register_blueprint(bp, url_prefix='/api')
 
 
-@bp.route('ping', methods=['GET'])
+@bp.route('/ping', methods=['GET'])
 def ping():
     return 'ok'
 

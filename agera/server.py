@@ -4,6 +4,10 @@ from flask import (
     Flask,
 )
 
+from flask.ext.cors import (
+    CORS,
+)
+
 from agera.settings import (
     DEBUG,
     SECRET_KEY,
@@ -41,6 +45,7 @@ def create_app():
 
 
 app = create_app()
+cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 
 if __name__ == '__main__':

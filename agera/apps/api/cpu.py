@@ -13,7 +13,7 @@ from agera.utils.koenig import (
 
 from agera.utils.validate import (
     validator,
-    IntField,
+    FloatField,
     BoolField,
 )
 
@@ -48,7 +48,7 @@ def get_cpu_times(percpu=False):
 @bp.route('/cpu/percent')
 @render_json
 @validator({
-    'interval': IntField,
+    'interval': FloatField,
     'percpu': BoolField,
 })
 def get_cpu_percent(interval=0, percpu=False):
@@ -65,7 +65,7 @@ def get_cpu_percent(interval=0, percpu=False):
 @bp.route('/cpu/times/percent')
 @render_json
 @validator({
-    'interval': IntField,
+    'interval': FloatField,
     'percpu': BoolField,
 })
 def get_cpu_times_percent(interval=0, percpu=False):
