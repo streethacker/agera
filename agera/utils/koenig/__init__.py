@@ -3,9 +3,7 @@
 import os
 import thriftpy
 
-from thriftpy.rpc import (
-    client_context,
-)
+from thriftpy.rpc import client_context
 
 from agera.settings import (
     KOENIG_THRIFT_SETTINGS,

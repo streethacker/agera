@@ -172,6 +172,21 @@ class DiskUsageSchema(Schema):
     def _percent(self, disk_usage):
         return '%.2f' % disk_usage.percent
 
+    total = fields.Method('_total')
+
+    def _total(self, disk_usage):
+        return bytes2human(disk_usage.total, 1)
+
+    used = fields.Method('_used')
+
+    def _used(self, disk_usage):
+        return bytes2human(disk_usage.used, 1)
+
+    free = fields.Method('_free')
+
+    def _free(self, disk_usage):
+        return bytes2human(disk_usage.free, 1)
+
     class Meta:
         fields = ('total', 'used', 'free', 'percent')
 

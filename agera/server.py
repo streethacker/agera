@@ -1,20 +1,13 @@
 # -*- coding: utf-8 -*-
 
-from flask import (
-    Flask,
-)
+from flask import Flask
+from flask.ext.cors import CORS
 
-from flask.ext.cors import (
-    CORS,
-)
+from agera.apps import api
 
 from agera.settings import (
     DEBUG,
     SECRET_KEY,
-)
-
-from agera.apps import (
-    api,
 )
 
 

@@ -54,3 +54,7 @@ then simply run:
 ```
 $ python server
 ```
+
+## Documentation
+
+[__Agera API Documentation__](https://github.com/streethacker/agera/blob/develop/doc/documentation.md)
