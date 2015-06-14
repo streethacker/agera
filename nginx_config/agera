@@ -1,0 +1,17 @@
+server {
+	listen 8080;
+	server_name agera.com;
+	root /srv/agera;
+	access_log /var/log/nginx/agera/access.log;
+	error_log /var/log/nginx/agera/access.log;
+	
+	location / {
+		proxy_set_header X-Forward-For $proxy_add_x_forwarded_for;
+		proxy_set_header Host $http_host;
+		proxy_redirect off;
+		if (!-f $request_filename) {
+			proxy_pass http://127.0.0.1:17021;
+			break;
+		}
+	}
+}
